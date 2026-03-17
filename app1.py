@@ -1,6 +1,10 @@
 import streamlit as st
+import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import re
+
+# Download VADER lexicon
+nltk.download('vader_lexicon')
 
 sid = SentimentIntensityAnalyzer()
 
@@ -15,19 +19,9 @@ def preprocess(text):
     return text.lower()
 
 if st.button("Analyze"):
-
     clean = preprocess(tweet)
 
     score = sid.polarity_scores(clean)["compound"]
 
-    st.subheader("Results")
-
     st.write("Cleaned Tweet:", clean)
     st.write("Sentiment Score:", score)
-
-    if score > 0.05:
-        st.success("Positive Sentiment")
-    elif score < -0.05:
-        st.error("Negative Sentiment")
-    else:
-        st.info("Neutral Sentiment")
