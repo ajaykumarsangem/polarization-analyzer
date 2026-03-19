@@ -25,8 +25,8 @@ def safe_read_json(path):
             except json.JSONDecodeError:
                 print(f"⚠️ Skipping bad line {i}")
     return pd.DataFrame(data)
-#tweets = safe_read_json("tweets.json")
-def run_bias_detector(tweets):
+tweets = safe_read_json("tweets.json")
+#def run_bias_detector(tweets):
 users = safe_read_json("users.json")
 print("✅ Tweets loaded:", tweets.shape)
 print("✅ Users loaded:", users.shape)
