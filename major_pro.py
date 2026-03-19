@@ -104,8 +104,8 @@ def run_bias_detector(input_tweets):
         "corrected": corrected
     }
 
-from google.colab import drive
-drive.mount('/content/drive')
+#from google.colab import drive
+#drive.mount('/content/drive')
 
 import pandas as pd
 import numpy as np
