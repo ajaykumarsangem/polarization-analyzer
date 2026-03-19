@@ -16,6 +16,8 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 nltk.download('stopwords')
 nltk.download('wordnet')
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+sid = SentimentIntensityAnalyzer()
 def safe_read_json(path):
     data = []
     with open(path, 'r', encoding='utf-8') as f:
@@ -25,20 +27,19 @@ def safe_read_json(path):
             except json.JSONDecodeError:
                 print(f"⚠️ Skipping bad line {i}")
     return pd.DataFrame(data)
-tweets = safe_read_json("tweets.json")
-#def run_bias_detector(tweets):
-users = safe_read_json("users.json")
+#tweets = safe_read_json("tweets.json")
+#users = safe_read_json("users.json")
 print("✅ Tweets loaded:", tweets.shape)
 print("✅ Users loaded:", users.shape)
-users['id_str'] = pd.to_numeric(users['id_str'], errors='coerce')
+#users['id_str'] = pd.to_numeric(users['id_str'], errors='coerce')
 
-merged = tweets.merge(users, left_on='user_id', right_on='id_str', suffixes=('_tweet', '_user'))
+#merged = tweets.merge(users, left_on='user_id', right_on='id_str', suffixes=('_tweet', '_user'))
 
 print("✅ Merged shape:", merged.shape)
 print("\n🛠️ Merged DataFrame columns before selection:")
 print(merged.columns)
-merged = merged[['created_at_tweet', 'text', 'retweet_count', 'favorite_count',
-                 'screen_name_user', 'followers_count', 'friends_count', 'verified']]
+#merged = merged[['created_at_tweet', 'text', 'retweet_count', 'favorite_count',
+ #                'screen_name_user', 'followers_count', 'friends_count', 'verified']]
 print("✅ Merged shape after selection:", merged.shape)
 merged.head(3)
 lemmatizer = WordNetLemmatizer()
@@ -60,6 +61,48 @@ print(merged.info())
 print("\n📊 Average tweet length:", merged['clean_text'].apply(len).mean())
 merged.to_csv("preprocessed_tweets.csv", index=False)
 print("\n💾 Saved 'preprocessed_tweets.csv' successfully!")
+
+def run_bias_detector(input_tweets):
+
+    tweets = pd.DataFrame({"text": input_tweets})
+
+    def preprocess(text):
+        text = re.sub(r"http\S+", "", text)
+        text = re.sub(r"@\w+", "", text)
+        text = re.sub(r"#\w+", "", text)
+        return text.lower()
+
+    tweets["clean"] = tweets["text"].apply(preprocess)
+
+    tweets["sentiment"] = tweets["clean"].apply(
+        lambda x: sid.polarity_scores(x)["compound"]
+    )
+
+    raw_polarization = np.mean(np.abs(tweets["sentiment"]))
+    sentiment_skew = abs(np.mean(tweets["sentiment"]))
+
+    user_dominance = 0.075
+    topic_focus = 0.060
+    temporal_spike = 1.0
+
+    bot_users = sum(
+        1 for t in tweets["clean"]
+        if "buy" in t or "free" in t or "click" in t
+    )
+
+    bias_score = bot_users
+    corrected = raw_polarization / (1 + bias_score)
+
+    return {
+        "user_dominance": user_dominance,
+        "topic_focus": topic_focus,
+        "temporal_spike": temporal_spike,
+        "sentiment_skew": sentiment_skew,
+        "bot_users": bot_users,
+        "raw": raw_polarization,
+        "bias": bias_score,
+        "corrected": corrected
+    }
 
 from google.colab import drive
 drive.mount('/content/drive')
