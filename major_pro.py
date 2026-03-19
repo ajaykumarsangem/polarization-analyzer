@@ -42,8 +42,8 @@ def safe_read_json(path):
  #                'screen_name_user', 'followers_count', 'friends_count', 'verified']]
 #print("✅ Merged shape after selection:", merged.shape)
 #merged.head(3)
-lemmatizer = WordNetLemmatizer()
-stop_words = set(stopwords.words('english'))
+#lemmatizer = WordNetLemmatizer()
+"""stop_words = set(stopwords.words('english'))
 
 def clean_tweet(text):
     text = str(text).lower()
@@ -60,7 +60,7 @@ print("\n🧾 Dataset Summary:")
 print(merged.info())
 print("\n📊 Average tweet length:", merged['clean_text'].apply(len).mean())
 merged.to_csv("preprocessed_tweets.csv", index=False)
-print("\n💾 Saved 'preprocessed_tweets.csv' successfully!")
+print("\n💾 Saved 'preprocessed_tweets.csv' successfully!")"""
 
 def run_bias_detector(input_tweets):
 
