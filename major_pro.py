@@ -29,19 +29,19 @@ def safe_read_json(path):
     return pd.DataFrame(data)
 #tweets = safe_read_json("tweets.json")
 #users = safe_read_json("users.json")
-print("✅ Tweets loaded:", tweets.shape)
-print("✅ Users loaded:", users.shape)
+#print("✅ Tweets loaded:", tweets.shape)
+#print("✅ Users loaded:", users.shape)
 #users['id_str'] = pd.to_numeric(users['id_str'], errors='coerce')
 
 #merged = tweets.merge(users, left_on='user_id', right_on='id_str', suffixes=('_tweet', '_user'))
 
-print("✅ Merged shape:", merged.shape)
-print("\n🛠️ Merged DataFrame columns before selection:")
-print(merged.columns)
+#print("✅ Merged shape:", merged.shape)
+#print("\n🛠️ Merged DataFrame columns before selection:")
+#print(merged.columns)
 #merged = merged[['created_at_tweet', 'text', 'retweet_count', 'favorite_count',
  #                'screen_name_user', 'followers_count', 'friends_count', 'verified']]
-print("✅ Merged shape after selection:", merged.shape)
-merged.head(3)
+#print("✅ Merged shape after selection:", merged.shape)
+#merged.head(3)
 lemmatizer = WordNetLemmatizer()
 stop_words = set(stopwords.words('english'))
 
